@@ -2,8 +2,11 @@ package com.yangxinyu.test;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * @BelongsProject : lambda
@@ -60,7 +63,7 @@ public class TestLambda {
         /*
         1、明确函数式接口：Runnable接口
         2、明确函数式接口类型：普通接口（抽象没有参数没有返回值）
-        3、
+        3、明确接口，省略接口名
          */
         Thread thread = new Thread(()->{
             System.out.println("多线程！");
@@ -69,4 +72,42 @@ public class TestLambda {
         thread.start();
     }
 
+    @Test
+    public void test07(){
+        Thread thread = new Thread(()->System.out.println("多线程！"));
+        thread.start();
+    }
+
+    @Test
+    public void test08(){
+        List<String> stringList = new ArrayList<>();
+        stringList.add("hello");
+        stringList.add("Java");
+        stringList.add("lambda");
+        stringList.add("java");
+        stringList.removeIf(new Predicate<String>() {
+            @Override
+            public boolean test(String s) {
+                return s.contains("a");
+            }
+        });
+
+        System.out.println(stringList);
+    }
+    @Test
+    public void test09(){
+        List<String> stringList = new ArrayList<>();
+        stringList.add("hello");
+        stringList.add("Java");
+        stringList.add("lambda");
+        stringList.add("java");
+       /* stringList.removeIf((String s)->{
+            return s.contains("a");
+        });*/
+        //return语句省略
+        stringList.removeIf((String s)->s.contains("a"));
+        stringList.removeIf((s)->s.contains("a"));
+        stringList.removeIf(s->s.contains("a"));
+        System.out.println(stringList);
+    }
 }
