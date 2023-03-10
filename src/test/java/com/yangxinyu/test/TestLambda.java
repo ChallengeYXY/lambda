@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * @BelongsProject : lambda
@@ -78,6 +80,9 @@ public class TestLambda {
         thread.start();
     }
 
+    /**
+     * 判断型接口
+     */
     @Test
     public void test08(){
         List<String> stringList = new ArrayList<>();
@@ -101,13 +106,56 @@ public class TestLambda {
         stringList.add("Java");
         stringList.add("lambda");
         stringList.add("java");
+        //自动判断泛型
        /* stringList.removeIf((String s)->{
             return s.contains("a");
         });*/
         //return语句省略
         stringList.removeIf((String s)->s.contains("a"));
         stringList.removeIf((s)->s.contains("a"));
+        //没有参数、多个参数括号不可以省略
         stringList.removeIf(s->s.contains("a"));
         System.out.println(stringList);
+    }
+
+    /**
+     * 消费型接口
+     */
+    @Test
+    public void test10(){
+        List<String> stringList = new ArrayList<>();
+        stringList.add("hello");
+        stringList.add("Java");
+        stringList.add("lambda");
+        stringList.add("java");
+        /*
+        for (String s : stringList) {
+            System.out.println(s);
+        }
+        */
+        //上面的写法就是调用了Iterable<T>接口中的forEach方法
+        stringList.forEach(s -> {
+            if (s.contains("a")){
+                System.out.println(s);
+            }
+        });
+    }
+
+    /**
+     * 供给型接口
+     */
+    @Test
+    public void test11(){
+        Supplier<String> supplier = new Supplier<String>() {
+            @Override
+            public String get() {
+                return "杨鑫宇";
+            }
+        };
+        System.out.println(supplier.get());
+    }
+    @Test
+    public void test12(){
+        //Stream.generate(()->"杨鑫宇").forEach();
     }
 }
