@@ -1,5 +1,6 @@
 package com.yangxinyu.test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
 import java.util.*;
@@ -185,4 +186,15 @@ public class TestLambda {
         //Map<Integer,String> map =
     }
 
+    @Test
+    public void test16(){
+        List<Student> students = new ArrayList<>();
+        students.add(new Student("张三",11));
+        students.add(new Student("李四",11));
+        String s = JsonUtils.toJsonString(students);
+        List list = JsonUtils.parseObject(s, List.class);
+        for (Object o : list) {
+            JsonUtils.parseObject(JsonUtils.toJsonString(o),Student.class);
+        }
+    }
 }
