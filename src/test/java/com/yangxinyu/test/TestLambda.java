@@ -2,10 +2,8 @@ package com.yangxinyu.test;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -156,6 +154,35 @@ public class TestLambda {
     }
     @Test
     public void test12(){
-        //Stream.generate(()->"杨鑫宇").forEach();
+        //循环调用get()方法
+        Stream.generate(()->"杨鑫宇").forEach(s-> System.out.println(s));
     }
+
+    /**
+     * 功能型接口
+     */
+    @Test
+    public void test13(){
+        //将单词首字母转为大写
+        //Function<T,R>类的抽象方法R apply(T t) 有参有返回值
+        Function<String,String> function = new Function<String, String>() {
+            @Override
+            public String apply(String s) {
+                return Character.toUpperCase(s.charAt(0))+s.substring(1);
+            }
+        };
+        System.out.println(function.apply("hello"));
+    }
+
+    @Test
+    public void test14(){
+        Function<String,String> function = s -> Character.toUpperCase(s.charAt(0))+s.substring(1);
+        System.out.println(function.apply("hello"));
+    }
+
+    @Test
+    public void test15(){
+        //Map<Integer,String> map =
+    }
+
 }
