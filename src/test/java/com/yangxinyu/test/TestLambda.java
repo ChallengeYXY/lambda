@@ -1,6 +1,8 @@
 package com.yangxinyu.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.apache.commons.codec.cli.Digest;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
 import java.util.*;
@@ -196,5 +198,11 @@ public class TestLambda {
         for (Object o : list) {
             JsonUtils.parseObject(JsonUtils.toJsonString(o),Student.class);
         }
+    }
+
+    @Test
+    public void test17(){
+        String s = DigestUtils.md5Hex("123");
+        System.out.println(s);
     }
 }
