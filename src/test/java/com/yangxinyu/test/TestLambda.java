@@ -1,11 +1,11 @@
 package com.yangxinyu.test;
 
 
-import org.apache.commons.codec.cli.Digest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -19,14 +19,13 @@ import java.util.stream.Stream;
  * @Description :
  */
 public class TestLambda {
+    /**
+     * Arrays工具类：public static <T> void sort(T[] a, Comparator<? super T> c)
+     * Comparator接口：int compare(T o1, T o2);
+     * 采用匿名内部类的方法
+     */
     @Test
     public void test01(){
-        String[] arr = {"hello","Java","yang","lambda","java"};
-        Arrays.sort(arr);
-        System.out.println(Arrays.toString(arr));
-    }
-    @Test
-    public void test02(){
         String[] arr = {"hello","Java","yang","lambda","java"};
         Arrays.sort(arr, new Comparator<String>() {
             @Override
@@ -37,52 +36,65 @@ public class TestLambda {
         System.out.println(Arrays.toString(arr));
     }
 
+    /**
+     * 发现这个匿名内部类new Comparator<String>()不会在别的地方使用了
+     * 而且泛型类型也会在T[] a时进行明确
+     * 发现有一些多余代码
+     */
     @Test
-    public void test03(){
+    public void test02(){
+        /*
+            1、明确函数函数接口：Comparator<T>接口（从public static <T> void sort(T[] a, Comparator<? super T> c)可知）
+            2、明确接口方法：int compare(T o1, T o2);
+            3、判断接口方法类型：有参数有返回值（功能型接口）
+            4、推测接口方法的参数与返回值的类型：
+                String[] arr
+                ==>推测出Comparator<T>的T为String且必须为String的父类或接口
+                ==>推测出int compare(T o1, T o2);的T为String
+            5、函数接口方法的形参个数，函数体是无法推测出来的
+            6、由于上面这些都可以推测出来，可以推测出来就可以直接在代码中省略
+         */
         String[] arr = {"hello","Java","yang","lambda","java"};
-        Arrays.sort(arr, (String o1, String o2)->o1.compareToIgnoreCase(o2));
+        Arrays.sort(arr,(String o1, String o2)->{
+            return o1.compareToIgnoreCase(o2);
+        });
         System.out.println(Arrays.toString(arr));
-    }
-    @Test
-    public void test04(){
-        String[] arr = {"hello","Java","yang","lambda","java"};
-        Arrays.sort(arr, String::compareToIgnoreCase);
+
+        /*
+            1、接口方法参数列表的参数类型是可以进行推断的，写上不错，不写也行
+            2、接口方法的方法体只有一句代码时，可以直接将{}省略，有return的还可以将return省略
+         */
+        Arrays.sort(arr,((o1, o2) -> o2.compareToIgnoreCase(o1)));
         System.out.println(Arrays.toString(arr));
     }
 
+    /**
+     * Thread的构造器：Thread(Runnable target)
+     * Thread接口的接口方法：void run();
+     * 采用匿名内部类的方法
+     */
     @Test
-    public void test05(){
+    public void test03(){
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("多线程！");
+                System.out.println("我是一个线程！");
             }
         });
         thread.start();
     }
-
     @Test
-    public void test06(){
-        /*
-        1、明确函数式接口：Runnable接口
-        2、明确函数式接口类型：普通接口（抽象没有参数没有返回值）
-        3、明确接口，省略接口名
-         */
-        Thread thread = new Thread(()->{
-            System.out.println("多线程！");
-        });
-
+    public void test04(){
+        Thread thread = new Thread(()->System.out.println("我是一个线程！"));
         thread.start();
     }
 
-    @Test
-    public void test07(){
-        Thread thread = new Thread(()->System.out.println("多线程！"));
-        thread.start();
-    }
 
     /**
      * 判断型接口
+     * List<E>实例对象：boolean removeIf(Predicate<? super E> filter)
+     * Predicate<T>接口的接口方法：boolean test(T t)
+     * 匿名内部类的方式
      */
     @Test
     public void test08(){
@@ -107,15 +119,14 @@ public class TestLambda {
         stringList.add("Java");
         stringList.add("lambda");
         stringList.add("java");
-        //自动判断泛型
-       /* stringList.removeIf((String s)->{
-            return s.contains("a");
-        });*/
-        //return语句省略
-        stringList.removeIf((String s)->s.contains("a"));
-        stringList.removeIf((s)->s.contains("a"));
-        //没有参数、多个参数括号不可以省略
-        stringList.removeIf(s->s.contains("a"));
+        System.out.println(stringList);
+        /*
+            1、List<String>
+                ==》推出boolean removeIf(Predicate<? super E> filter)的E为大于等于String
+                ==》推出Predicate<T>的T大于等于String
+                ==》推出boolean test(T t)的T大于等于String
+         */
+        stringList.removeIf(s -> s.contains("o"));
         System.out.println(stringList);
     }
 
@@ -185,7 +196,15 @@ public class TestLambda {
 
     @Test
     public void test15(){
-        //Map<Integer,String> map =
+        Function<Student, String> getName = new Function<Student, String>() {
+            @Override
+            public String apply(Student student) {
+                return student.getName();
+            }
+        };
+        System.out.println(getName.apply(new Student("张三",11)));
+
+        Function<Student, String> getName1 = Student::getName;
     }
 
     @Test
@@ -204,5 +223,27 @@ public class TestLambda {
     public void test17(){
         String s = DigestUtils.md5Hex("123");
         System.out.println(s);
+    }
+
+    @Test
+    public void test18(){
+        List<String> stringList = new ArrayList<>();
+        stringList.add("hello");
+        stringList.add("Java");
+        stringList.add("lambda");
+        stringList.add("java");
+
+        //创建流
+        Stream<String> stream = stringList.stream();
+        /*
+            操作流
+            还会返回一个新流
+            一个流只能被操作一次
+         */
+        stream = stream.filter(s -> s.contains("o"));
+
+        //终结流
+        stream.forEach(s -> System.out.println(s));
+
     }
 }
