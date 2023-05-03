@@ -237,8 +237,8 @@ public class TestLambda {
         Stream<String> stream = stringList.stream();
         /*
             操作流
-            还会返回一个新流
-            一个流只能被操作一次
+            还会返回一个新流（虽然不会改变原有集合，但是新流中的数据会变）
+            一个流只能被操作一次（操作完成就废弃）
          */
         stream = stream.filter(s -> s.contains("o"));
 
